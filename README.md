@@ -84,7 +84,9 @@ void Dialog::event_show_time(QSharedPointer<QVariant> ptr)
 1. QuickWork及其子类允许被反射，通过QUICK_AUTO(class name)宏和QuickController可以实现控制类的自动实力化
 
 QUICK_AUTO(class name)作用
+
 (1).向QT元对象系统注册自己类型
+
 (2).在mian方法之前将自己类名注册到需要反射类列表中，QuickController对象创建后会反射出所有已注册的类，并做线程归属处理
 
 原理：C/C++无法在main之前执行复杂的操作，通过在.h文件中定义static变量且通过函数方式赋值，可以main之前执行一段代码
