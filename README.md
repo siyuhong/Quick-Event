@@ -7,12 +7,34 @@
 1.  界面与控制逻辑完全分离
 2.  事件管理
 3.  线程管理
-4.  控制类自动化管理
+4.  控制类装填
 
 
 #### 使用说明
 
-1.  
+#####  发布和订阅
+通过继承自QuickWork或引入QUICK_EVENT(parent)宏来让你的自己定义的类具有发布和订阅事件的能力；
+
+```
+//1.继承自QuickWork
+class UserWork : public QuickWork
+{
+    Q_OBJECT
+public:
+    Q_INVOKABLE explicit UserWork(QObject *parent = nullptr);
+    ...
+};
+//2.使用QUICK_EVENT宏
+class Dialog : public QDialog
+{
+    Q_OBJECT
+    QUICK_EVENT(QDialog)
+public:
+    explicit Dialog(QWidget *parent = nullptr);
+    ...
+};
+```
+注:通过QUICK_EVENT宏的方式类也必须时QObject的子类
 2.  
 3.  
 
