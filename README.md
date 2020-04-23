@@ -81,7 +81,7 @@ void Dialog::event_show_time(QSharedPointer<QVariant> ptr)
 
 ```
 ######  控制类装填
-1. QuickWork及其子类允许被反射，通过QUICK_AUTO(class name)宏和QuickController可以实现控制类的自动实力化
+1. QuickWork及其子类允许被反射，通过QUICK_AUTO(class name)宏和QuickController可以实现控制类的自动实例化
 
 QUICK_AUTO(class name)作用
 
