@@ -10,20 +10,10 @@
 #include <QVariant>
 #include <QSharedPointer>
 #include <QThread>
-#include <QGenericArgument>
-#include <QtCore>
 
 #include "quickevent.h"
 
 class QuickWork;
-
-enum PublishType {
-    AutoPublish,
-    DirectPublish,
-    QueuedPublish,
-    BlockingQueuedPublish,
-    UniquePublish = 0x80
-};
 
 class QuickApplication : public QApplication
 {
@@ -33,77 +23,70 @@ public:
 
     virtual ~QuickApplication();
 
+
     template<class T>
-    static void getAddress(QList<QGenericArgument> &list, T&& t)
+    static void getList(QList<QByteArray> &typeNames, QList<QGenericArgument> &list, T&& t)
     {
-        list << Q_ARG(decltype(t), t);
+        typeNames << QByteArray(typeid(t).name());
+        list << Q_ARG(T, t);
     }
 
+    template<class T>
+    static void getList(QList<QByteArray> &typeNames, QList< QSharedPointer<QVariant> > &list, T&& t)
+    {
+        typeNames << QByteArray(typeid(t).name());
+        QSharedPointer<QVariant> ptr(new QVariant());
+        ptr->setValue(t);
+        list << ptr;
+    }
+
+
     template<class ...Args>
-    static void publishEvent(QByteArray eventName, PublishType type, Args&&... args)
+    static void publishEvent(QByteArray eventName, Qt::ConnectionType type, Args&&... args)
     {
         if(eventName.isEmpty())
             return ;
 
-        auot argsNum = sizeof...(args);
+        auto argsNum = sizeof...(args);
         Q_ASSERT_X(argsNum <= 10, "QuickEvent", "publishEvent argv number not greater than 10");
-
-
-        QList<QGenericArgument> list;
-        int[] arr = {(getAddress(list, args),0)...};
-        auto len = list.size();
-
-        while(len < 10) list << QGenericArgument();
 
         QReadLocker loker(&s_lock);
 
-        if(s_quick_event_pool.contains(name))
+        if(s_quick_event_pool.contains(eventName))
         {
-            auto set = s_quick_event_pool[name];
+            auto set = s_quick_event_pool[eventName];
+            auto methodName = QByteArray(MethodHead) + eventName;
 
             foreach (auto var, set) {
-                auto methodIndex = 2;
-                var->metaObject()->method(methodIndex).invoke(var, type, list[0], list[1], list[2], list[3],
-                                                             list[4],list[5], list[6], list[7], list[8], list[9]);
+                //using qt support
+                if(var->thread() == QThread::currentThread() || type == Qt::BlockingQueuedConnection)
+                {
+                    QList<QGenericArgument> list;
+                    QList<QByteArray> typeNames;
+                    int arr[] = { (getList(typeNames, list, args),0)... };
+                    while(list.size() < 10) list << QGenericArgument();
+                    auto index = -1;
+
+                    if((index = methodIndex(var, typeNames, argsNum, methodName)) == -1)
+                        continue;
+                    var->metaObject()->method(index).invoke(var, type, list[0], list[1], list[2], list[3],
+                                                            list[4], list[5], list[6], list[7], list[8], list[9]);
+                } else { //quick event
+                    QList< QSharedPointer<QVariant> > list;
+                    QList<QByteArray> typeNames;
+                    int arr[] = { (getList(typeNames, list, args),0)... };
+                    QuickEvent *event = new QuickEvent();
+
+                    event->setInfo(list);
+                    event->setEventName(eventName);
+                    QApplication::postEvent(var, event);
+                }
             }
         }
-
-
     }
 
-    static void doPostEvent(QObject *receiver, QEvent *event, int priority = Qt::NormalEventPriority);
-
-    template <typename T>
-    static void postEvent(QObject *receiver, T &info, QByteArray eventName, int priority = Qt::NormalEventPriority)
-    {
-        auto var = new QVariant();
-        var->setValue(info);
-
-        QuickEvent *event = new QuickEvent();
-        event->setInfo(var);
-        event->setEventName(eventName);
-
-        doPostEvent(receiver, event, priority);
-    }
-
-    template <typename T>
-    static bool sendEvent(QObject *receiver, T &info, QByteArray eventName)
-    {
-        auto var = new QVariant();
-        var->setValue(info);
-
-        QuickEvent *event = new QuickEvent();
-        event->setInfo(var);
-        event->setEventName(eventName);
-
-        auto flag = doSendEvent(receiver, event);
-
-        delete var;
-
-        return flag;
-    }
-
-    static bool doSendEvent(QObject *receiver, QEvent *event);
+    static int methodIndex(QObject *recv, QList<QByteArray> &typeNames,
+                           int argsNum, QByteArray methodName);
 
     static bool subscibeEvent(QObject *listener, QByteArray eventName);
 

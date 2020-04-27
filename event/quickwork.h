@@ -6,8 +6,10 @@
 
 #include "quick.h"
 #include <QSet>
+#include <QList>
 #include <QString>
 #include <QDebug>
+#include <QArgument>
 
 
 class QuickWork : public QObject

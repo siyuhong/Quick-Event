@@ -13,7 +13,7 @@ class UserWork : public QuickWork
 public:
     Q_INVOKABLE explicit UserWork(QObject *parent = nullptr);
 public slots:
-    void event_dashao(QSharedPointer<QVariant> ptr);
+    void event_linggongju(const QString &name);
 };
 QUICK_AUTO(UserWork)
 

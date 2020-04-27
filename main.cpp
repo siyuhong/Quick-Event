@@ -4,7 +4,7 @@
 #include <QThread>
 
 int main(int argc, char **argv)
-{    
+{
     QuickApplication a(argc,argv);
 
     QuickController controller;

@@ -10,8 +10,6 @@ Dialog::Dialog(QWidget *parent) :
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
-    //
-    QuickApplication::subscibeEvent(this, "denglu_jieguo");
     QuickApplication::subscibeEvent(this, "show_time");
     box = new QMessageBox();
 }
@@ -21,22 +19,9 @@ Dialog::~Dialog()
     delete ui;
 }
 
-void Dialog::event_denglu_jieguo(QSharedPointer<QVariant> ptr)
+void Dialog::event_show_time(const QDateTime &time)
 {
-    box->close();
-
-    auto status = ptr->value<int>();
-
-    if(status)
-        ui->show_label->setText("登录成功");
-    else
-        ui->show_label->setText("登录失败");
-}
-
-void Dialog::event_show_time(QSharedPointer<QVariant> ptr)
-{
-    qDebug() << ptr->value<QString>();
-    box->setText(ptr->value<QString>());
+    box->setText(time.toString());
     box->show();
 }
 
@@ -49,8 +34,7 @@ void Dialog::on_pushButton_clicked()
 
     ui->show_label->setText("登录...");
 
-    QuickApplication::postEvent(nullptr, student, "denglu");
-
+    QuickApplication::publishEvent("denglu", Qt::AutoConnection, student);
 }
 
 void Dialog::on_pushButton_2_clicked()
@@ -60,5 +44,10 @@ void Dialog::on_pushButton_2_clicked()
 
 void Dialog::on_pushButton_3_clicked()
 {
-    QuickApplication::postEvent(nullptr, QString("打扫卫生"), "dashao");
+    QuickApplication::publishEvent("dashao", Qt::AutoConnection, ui->name_lineEdit->text(), QString("打扫卫生"));
+}
+
+void Dialog::on_pushButton_4_clicked()
+{
+     QuickApplication::quit();
 }
