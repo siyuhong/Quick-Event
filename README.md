@@ -57,10 +57,9 @@ QuickApplication提供了postEvent方法用来发布一个消息
 ```
 TestWork::TestWork(QObject *parent) : QuickWork(parent)
 {
-    QTimer::singleShot(2000, this, [this]() {
-        auto time = QDateTime::currentDateTime().toString();
-        QuickApplication::postEvent(nullptr, time, "show_time");
-        ...
+        QTimer::singleShot(2000, this, []() {
+        auto time = QDateTime::currentDateTime();
+        QuickApplication::publishEvent("show_time", Qt::AutoConnection, time);
     });
 }
 ```
@@ -69,13 +68,13 @@ TestWork::TestWork(QObject *parent) : QuickWork(parent)
 
 ```
 public slots:
-    void event_show_time(QSharedPointer<QVariant> ptr);
+    void event_show_time(const QDateTime &time);
 
 ...
 
-void Dialog::event_show_time(QSharedPointer<QVariant> ptr)
+void Dialog::event_show_time(const QDateTime &time)
 {
-    box->setText(ptr->value<QString>());
+    box->setText(time.toString());
     box->show();
 }
 
@@ -112,6 +111,28 @@ QUICK_AUTO(class name)作用
 3.  提交代码
 4.  新建 Pull Request
 
+####  更新
+2.0.0版本
+1.通过引入变参模板使得事件响应函数(event_ + 消息名称)的定义更加自由
+2.发布订阅支持了
+
+同步触发[DirectConnection]；
+异步触发[QueuedConnection]；
+异步触发等待[BlockingQueuedConnection]；
+
+问题：
+1.事件发布后如何确定调用触发函数匹配仍然不够完美;
+问题在于QT元对象系统对于方法参数类型的摘要(QMetaMethod::parameterTypes)和C++的typeid()差距过大
+目前只匹配最基本外部类型，对于模板无法处理，所以不建议重载参数个数相同的事件响应函数,以下重载就会
+产生问题
+void event_show_time(const QDateTime &time, QList<int> list);
+void event_show_time(const QDateTime &time, QList<QString> list);
+注意
+1.跨线程的事件发布传递参数需要使用QT已知的类型
+同使用QT的QMetaObject::QMetaCallEvent一样QuickEvent在处理跨线程异步触发时也会在堆中创建变量的副本；
+消息订阅者可能是多个，这里使用了QSharedPointer<QVariant>共享这块内存；所以传入参数会被转换成QVariant类型，
+未知类型在编译时就会保持
+2.对于同步触发和异步触发等待，则支持任意类型参数；
 
 #### 码云特技
 
