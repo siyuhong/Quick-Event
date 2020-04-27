@@ -132,12 +132,14 @@ QUICK_AUTO(class name)作用
 1.事件发布后如何确定调用触发函数匹配仍然不够完美;
 
 问题在于QT元对象系统对于方法参数类型的摘要(QMetaMethod::parameterTypes)和C++的typeid()差距过大
-目前只匹配最基本外部类型，对于模板无法处理，所以不建议重载参数个数相同的事件响应函数,以下重载就会
+目前只匹配外部类型，对于模板无法处理，所以不建议重载参数个数相同的事件响应函数,以下重载就会
 产生问题
 
+```
 void event_show_time(const QDateTime &time, QList<int> list);
 
 void event_show_time(const QDateTime &time, QList<QString> list);
+```
 
 注意
 1.跨线程的事件发布传递参数需要使用QT已知的类型
