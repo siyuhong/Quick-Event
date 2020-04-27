@@ -3,8 +3,6 @@
 #include "event/quickapplication.h"
 #include "event/quickevent.h"
 
-#include "student.h"
-
 #include <QEventLoop>
 #include <QByteArray>
 #include <QDateTime>
@@ -18,17 +16,22 @@
 TestWork::TestWork(QObject *parent) : QuickWork(parent)
 {
     QuickApplication::subscibeEvent(this, "denglu");
+    QuickApplication::subscibeEvent(this, "dashao");
 
-    QTimer::singleShot(2000, this, [this]() {
-        auto time = QDateTime::currentDateTime().toString();
-        QuickApplication::postEvent(nullptr, time, "show_time");
+    QTimer::singleShot(2000, this, []() {
+        auto time = QDateTime::currentDateTime();
+        QuickApplication::publishEvent("show_time", Qt::AutoConnection, time);
     });
 }
 
-void TestWork::event_denglu(QSharedPointer<QVariant> ptr)
+void TestWork::event_dashao(const QString &name, QString work)
 {
-   auto stu = ptr->value<Student>();
+    QuickApplication::publishEvent("linggongju", Qt::AutoConnection, name);
+    qDebug() <<  name << ":" << work;
+}
 
+void TestWork::event_denglu(const Student &stu)
+{
     qDebug() << stu.name_;
     qDebug() << stu.id_;
 
@@ -39,9 +42,6 @@ void TestWork::event_denglu(QSharedPointer<QVariant> ptr)
    loop.exec();
 
    qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
-   int status = qrand()%2;
-
-   QuickApplication::postEvent(nullptr, status, "denglu_jieguo");
 }
 
 bool TestWork::S_Request()

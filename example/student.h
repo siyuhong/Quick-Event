@@ -8,6 +8,8 @@ class Student : public QObject
     Q_OBJECT
 public:
     explicit Student(QObject *parent = nullptr);
+    ~Student();
+
     Student(const Student &other);
     Student &operator=(const Student &other);
 

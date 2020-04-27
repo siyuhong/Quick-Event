@@ -19,60 +19,60 @@ QuickApplication::~QuickApplication()
 {
 }
 
-bool QuickApplication::doSendEvent(QObject *receiver, QEvent *event)
+void typeName(const QByteArray &s, QByteArray &d)
 {
-    if(event == nullptr)
-        return false;
-
-    int type = event->type();
-
-    if(type == S_QuickEvent)
-    {
-        auto quickEvent = dynamic_cast<QuickEvent*>(event);
-        auto name = quickEvent->eventName();
-
-        QReadLocker loker(&s_lock);
-
-        if(s_quick_event_pool.contains(name))
+    foreach (auto var, s) {
+        if((var >= 'A' && var <= 'Z') ||
+                (var >= 'a' && var <= 'z') ||
+                (var >= '0' && var <= '9') ||
+                var == '_')
         {
-             auto set = s_quick_event_pool[name];
-             foreach (auto var, set) {
-                     return QApplication::sendEvent(var, quickEvent);
-             }
+            d.append(var);
+            continue;
         }
+        break;
     }
-
-    return QApplication::sendEvent(receiver, event);
 }
 
-void QuickApplication::doPostEvent(QObject *receiver, QEvent *event, int priority)
+bool checkpParameter(QList<QByteArray> s, QList<QByteArray> d)
 {
-    if(event == nullptr)
-        return ;
+    qDebug() << d;
+    qDebug() << s;
 
-    int type = event->type();
-
-    if(type == S_QuickEvent)
+    for(int i= 0; i < d.size(); ++ i)
     {
-        auto quickEvent = dynamic_cast<QuickEvent*>(event);
-        auto name = quickEvent->eventName();
+        QByteArray name;
+        typeName(d[i], name);
+        if(name.isEmpty()) return  false;
+        if(!(s[i].startsWith(name) || s[i].startsWith("class " + name))) return false;
+    }
+    return true;
+}
 
-        QReadLocker loker(&s_lock);
+int QuickApplication::methodIndex(QObject *recv, QList<QByteArray> &typeNames,
+                                  int argsNum, QByteArray methodName)
+{
+    if(recv == nullptr)
+        return -1;
 
-        if(s_quick_event_pool.contains(name))
+    auto obj = recv->metaObject();
+
+    for(int i = obj->methodOffset(); i < recv->metaObject()->methodCount(); ++ i)
+    {
+        auto method = obj->method(i);
+
+        if(methodName == method.name())
         {
-             auto set = s_quick_event_pool[name];
-             foreach (auto var, set) {
-                     QuickEvent *newevent = new QuickEvent();
-                     *newevent = *quickEvent;
-                     QApplication::postEvent(var, newevent, priority);
-             }
+            if(method.parameterCount() > argsNum)
+                continue;
+            if(checkpParameter(typeNames, method.parameterTypes()))
+                return i;
         }
-        delete quickEvent;
-        return;
     }
 
-    QApplication::postEvent(receiver, event, priority);
+    qDebug() << "QuickEvent : Not found " << QString(obj->className()) + "::" + methodName;
+
+    return -1;
 }
 
 bool QuickApplication::subscibeEvent(QObject *listener, QByteArray eventName)

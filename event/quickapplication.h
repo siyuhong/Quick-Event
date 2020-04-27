@@ -23,45 +23,77 @@ public:
 
     virtual ~QuickApplication();
 
-    static void doPostEvent(QObject *receiver, QEvent *event, int priority = Qt::NormalEventPriority);
 
-    template <typename T>
-    static void postEvent(QObject *receiver, T &info, QByteArray eventName, int priority = Qt::NormalEventPriority)
+    template<class T>
+    static void getList(QList<QByteArray> &typeNames, QList<QGenericArgument> &list, T&& t)
     {
-        auto var = new QVariant();
-        var->setValue(info);
-
-        QuickEvent *event = new QuickEvent();
-        event->setInfo(var);
-        event->setEventName(eventName);
-
-        doPostEvent(receiver, event, priority);
+        typeNames << QByteArray(typeid(t).name());
+        list << Q_ARG(T, t);
     }
 
-    template <typename T>
-    static bool sendEvent(QObject *receiver, T &info, QByteArray eventName)
+    template<class T>
+    static void getList(QList<QByteArray> &typeNames, QList< QSharedPointer<QVariant> > &list, T&& t)
     {
-        auto var = new QVariant();
-        var->setValue(info);
-
-        QuickEvent *event = new QuickEvent();
-        event->setInfo(var);
-        event->setEventName(eventName);
-
-        auto flag = doSendEvent(receiver, event);
-
-        delete var;
-
-        return flag;
+        typeNames << QByteArray(typeid(t).name());
+        QSharedPointer<QVariant> ptr(new QVariant());
+        ptr->setValue(t);
+        list << ptr;
     }
 
-    static bool doSendEvent(QObject *receiver, QEvent *event);
+
+    template<class ...Args>
+    static void publishEvent(QByteArray eventName, Qt::ConnectionType type, Args&&... args)
+    {
+        if(eventName.isEmpty())
+            return ;
+
+        auto argsNum = sizeof...(args);
+        Q_ASSERT_X(argsNum <= 10, "QuickEvent", "publishEvent argv number not greater than 10");
+
+        QReadLocker loker(&s_lock);
+
+        if(s_quick_event_pool.contains(eventName))
+        {
+            auto set = s_quick_event_pool[eventName];
+            auto methodName = QByteArray(MethodHead) + eventName;
+
+            foreach (auto var, set) {
+                //using qt support
+                if(var->thread() == QThread::currentThread() || type == Qt::BlockingQueuedConnection)
+                {
+                    QList<QGenericArgument> list;
+                    QList<QByteArray> typeNames;
+                    int arr[] = { (getList(typeNames, list, args),0)... };
+                    while(list.size() < 10) list << QGenericArgument();
+                    auto index = -1;
+
+                    if((index = methodIndex(var, typeNames, argsNum, methodName)) == -1)
+                        continue;
+                    var->metaObject()->method(index).invoke(var, type, list[0], list[1], list[2], list[3],
+                                                            list[4], list[5], list[6], list[7], list[8], list[9]);
+                } else { //quick event
+                    QList< QSharedPointer<QVariant> > list;
+                    QList<QByteArray> typeNames;
+                    int arr[] = { (getList(typeNames, list, args),0)... };
+                    QuickEvent *event = new QuickEvent();
+
+                    event->setInfo(list);
+                    event->setEventName(eventName);
+                    QApplication::postEvent(var, event);
+                }
+            }
+        }
+    }
+
+    static int methodIndex(QObject *recv, QList<QByteArray> &typeNames,
+                           int argsNum, QByteArray methodName);
 
     static bool subscibeEvent(QObject *listener, QByteArray eventName);
 
     static void logoutEvent(QObject *listener, QByteArray eventName);
 
     static void exit(int rlt = 0);
+
 private:
     static QMap< QByteArray, QSet<QObject *> > s_quick_event_pool;
 

@@ -9,8 +9,8 @@ QuickEvent::QuickEvent(Type type):QEvent(type)
 {
 }
 
-QuickEvent::QuickEvent(QByteArray eventName, QVariant &info, QEvent::Type type)
-    :QEvent(type), eventName_(eventName), info_(&info)
+QuickEvent::QuickEvent(QByteArray eventName, QList<QSharedPointer<QVariant>> &info, QEvent::Type type)
+    :QEvent(type), eventName_(eventName), info_(info)
 {
 
 }
@@ -27,16 +27,6 @@ QuickEvent &QuickEvent::operator=(const QuickEvent &other)
     return *this;
 }
 
-QSharedPointer<QVariant> QuickEvent::info() const
-{
-    return info_;
-}
-
-void QuickEvent::setInfo(QVariant *info)
-{
-    info_.reset(info);
-}
-
 QByteArray QuickEvent::eventName() const
 {
     return eventName_;
@@ -45,4 +35,14 @@ QByteArray QuickEvent::eventName() const
 void QuickEvent::setEventName(const QByteArray &eventName)
 {
     eventName_ = eventName;
+}
+
+void QuickEvent::setInfo(const QList<QSharedPointer<QVariant> > &info)
+{
+    info_ = info;
+}
+
+QList<QSharedPointer<QVariant> > QuickEvent::info() const
+{
+    return info_;
 }

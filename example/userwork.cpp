@@ -3,13 +3,23 @@
 
 #include <QDebug>
 #include <QString>
+#include <QVariant>
+#include <QTimer>
 
 UserWork::UserWork(QObject *parent) : QuickWork(parent)
 {
-    QuickApplication::subscibeEvent(this, "dashao");
+    QuickApplication::subscibeEvent(this, "linggongju");
 }
 
-void UserWork::event_dashao(QSharedPointer<QVariant> ptr)
+void UserWork::event_linggongju(const QString &name)
 {
-    qDebug() <<  ptr->value<QString>();
+     qDebug() << name << "领工具中...";
+
+     QTimer timer;
+     QEventLoop loop;
+     connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
+     timer.start(2000);
+     loop.exec();
+
+     qDebug() << "领好工具";
 }

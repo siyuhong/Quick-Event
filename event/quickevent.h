@@ -16,23 +16,22 @@ class QuickEvent : public QEvent
 public:
     QuickEvent(Type type = S_QuickEvent);
 
-    QuickEvent(QByteArray eventName, QVariant& info, Type type = S_QuickEvent);
+    QuickEvent(QByteArray eventName, QList<QSharedPointer<QVariant>>& info, Type type = S_QuickEvent);
 
     virtual ~QuickEvent();
 
     QuickEvent &operator=(const QuickEvent &other);
 
-    QSharedPointer<QVariant> info() const;
-
-    void setInfo(QVariant *info);
-
     QByteArray eventName() const;
 
     void setEventName(const QByteArray &eventName);
 
+    QList<QSharedPointer<QVariant> > info() const;
+    void setInfo(const QList<QSharedPointer<QVariant> > &info);
+
 private:
     QByteArray           eventName_;
-    QSharedPointer<QVariant> info_;
+    QList<QSharedPointer<QVariant>> info_;
 };
 
 #endif // QUICKEVENT_H
