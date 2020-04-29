@@ -1,7 +1,7 @@
 # Quick Event
 
 #### 介绍
-基于QT-5.6封装的一套控制与界面完全分离的代码；利用QT的元对象属性，实现控制类的自动实例化；VS-2015编译通过，使用了C++11语法；使用该模型可以更加专注与自己模块或功能点的开发，更便于调试和扩展；完全分离的控制和界面，让重构变的非常轻松；
+基于QT-5.6封装的一套控制与界面完全分离的代码；利用QT的元对象属性，实现控制类的自动实例化；VS-2015编译通过，C++11；使用QuickEvent设计复杂功能可以让开发者，更加专注与自己模块或功能点的开发，也有利于调试和扩展；高内聚，低耦合，不仅让协同开发变得简单，也让重构变的非常轻松；生产级别代码clone即用，示例仅供参考；
 
 #### 软件架构
 1.  界面与控制逻辑完全分离
@@ -34,7 +34,7 @@ public:
     ...
 };
 ```
-注:通过QUICK_EVENT宏的方式类也必须时QObject的子类
+注:QObject及其子类才能通过QUICK_EVENT宏引入发布订阅；
 
 2.订阅消息
 QuickApplication提供了subscibeEvent方法用来订阅一个消息
@@ -52,7 +52,7 @@ Dialog::Dialog(QWidget *parent) :
 ```
 
 3.发布消息
-QuickApplication提供了postEvent方法用来发布一个消息
+QuickApplication提供了publishEvent方法用来发布一个消息
 
 ```
 TestWork::TestWork(QObject *parent) : QuickWork(parent)
@@ -63,8 +63,19 @@ TestWork::TestWork(QObject *parent) : QuickWork(parent)
     });
 }
 ```
+
+publishEvent定义如下：
+```
+    template<class ...Args>
+    static void publishEvent(QByteArray eventName, Qt::ConnectionType type, Args&&... args)
+    {
+        ...
+    }
+```
+
 4.接受并处理消息
-引入发布和订阅功能的类通过实现event_ + 消息名称的槽函数即可接受并处理postEvent推送消息
+引入发布和订阅功能的类通过实现event_ + 消息名称的槽函数即可接受并处理publishEvent推送消息
+(需要参数列表匹配一致)
 
 ```
 public slots:
@@ -104,15 +115,8 @@ QUICK_AUTO(class name)作用
 ```
 注:继承自QuickWork后可以覆盖QuickWork::start函数，start函数一定会在被移动到的线程中调用；
 
-#### 参与贡献
+#### 更新2.0.0版本
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-####  更新
-2.0.0版本
 1.通过引入变参模板使得事件响应函数(event_ + 消息名称)的定义更加自由;
 
 2.发布订阅支持了:
@@ -128,12 +132,14 @@ QUICK_AUTO(class name)作用
 1.事件发布后如何确定调用触发函数匹配仍然不够完美;
 
 问题在于QT元对象系统对于方法参数类型的摘要(QMetaMethod::parameterTypes)和C++的typeid()差距过大
-目前只匹配最基本外部类型，对于模板无法处理，所以不建议重载参数个数相同的事件响应函数,以下重载就会
+目前只匹配外部类型，对于模板无法处理，所以不建议重载参数个数相同的事件响应函数,以下重载就会
 产生问题
 
+```
 void event_show_time(const QDateTime &time, QList<int> list);
 
 void event_show_time(const QDateTime &time, QList<QString> list);
+```
 
 注意
 1.跨线程的事件发布传递参数需要使用QT已知的类型
@@ -141,9 +147,16 @@ void event_show_time(const QDateTime &time, QList<QString> list);
 同使用QT的QMetaObject::QMetaCallEvent一样QuickEvent在处理跨线程异步触发时也会在堆中创建变量的副本；
 
 消息订阅者可能是多个，这里使用了QSharedPointer<QVariant>共享这块内存；所以传入参数会被转换成QVariant类型，
-未知类型在编译时就会保持;
+未知类型在编译时就会报错;
 
 2.对于同步触发和异步触发等待，则支持任意类型参数；
+
+#### 参与贡献
+
+1.  Fork 本仓库
+2.  新建 Feat_xxx 分支
+3.  提交代码
+4.  新建 Pull Request
 
 #### 码云特技
 
