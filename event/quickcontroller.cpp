@@ -20,12 +20,17 @@ QuickController::QuickController(QObject *parent) : QObject(parent)
     {
         auto type = QMetaType::type(var + "*");
         auto meta = QMetaType::metaObjectForType(type);
-        auto obj = meta->newInstance(Q_ARG(QObject*, nullptr));
+        auto obj = meta->newInstance(Q_ARG(QuickWork*, nullptr));
         auto work = qobject_cast<QuickWork*>(obj);
-        auto t = new QThread();
+
+        if(work == nullptr)
+            continue;
+
+        QThread *t = nullptr;
 
         switch (work->getMoveType()) {
         case QuickWork::NewThread:
+            t = new QThread();
             work->moveToThread(t);
             threads_.insert(t, work);
             t->start();

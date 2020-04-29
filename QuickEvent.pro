@@ -29,7 +29,8 @@ HEADERS += \
     event/quickapplication.h \
     event/quickevent.h \
     event/quickwork.h \
-    example/userwork.h
+    example/userwork.h \
+    example/orderwork.h
 
 SOURCES += \
     event/quickcontroller.cpp \
@@ -40,7 +41,8 @@ SOURCES += \
     event/quickevent.cpp \
     event/quickwork.cpp \
     example/userwork.cpp \
-    main.cpp
+    main.cpp \
+    example/orderwork.cpp
 
 FORMS += \
     example/dialog.ui

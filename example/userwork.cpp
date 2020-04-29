@@ -6,7 +6,7 @@
 #include <QVariant>
 #include <QTimer>
 
-UserWork::UserWork(QObject *parent) : QuickWork(parent)
+UserWork::UserWork(QuickWork *parent) : QuickWork(parent)
 {
     QuickApplication::subscibeEvent(this, "linggongju");
 }

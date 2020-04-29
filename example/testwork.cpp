@@ -13,7 +13,7 @@
 #include <QNetworkReply>
 #include <QNetworkAccessManager>
 
-TestWork::TestWork(QObject *parent) : QuickWork(parent)
+TestWork::TestWork(QuickWork *parent) : QuickWork(parent)
 {
     QuickApplication::subscibeEvent(this, "denglu");
     QuickApplication::subscibeEvent(this, "dashao");

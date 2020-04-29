@@ -14,7 +14,7 @@ class TestWork : public QuickWork
 {
     Q_OBJECT
 public:
-    Q_INVOKABLE explicit TestWork(QObject *parent = nullptr);
+    Q_INVOKABLE explicit TestWork(QuickWork *parent = nullptr);
 
     bool S_Request();
 public slots:

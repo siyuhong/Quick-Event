@@ -11,7 +11,7 @@ class UserWork : public QuickWork
 {
     Q_OBJECT
 public:
-    Q_INVOKABLE explicit UserWork(QObject *parent = nullptr);
+    Q_INVOKABLE explicit UserWork(QuickWork *parent = nullptr);
 public slots:
     void event_linggongju(const QString &name);
 };
