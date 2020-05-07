@@ -24,22 +24,40 @@ public:
     virtual ~QuickApplication();
 
 
+#if defined(Q_OS_LINUX)
+    #include <cxxabi.h>
+#endif
     template<class T>
-    static void getList(QList<QByteArray> &typeNames, QList<QGenericArgument> &list, T&& t)
-    {
+    static void getList(QList<QByteArray> &typeNames,
+                        QList<QGenericArgument> &list, T &&t) {
+#if defined(Q_OS_LINUX)
+        char *type = abi::__cxa_demangle(typeid(t).name(), nullptr, nullptr, nullptr);
+        typeNames << QByteArray(type);
+        list << Q_ARG(T, t);
+        free(type);
+#elif defined(Q_OS_WIN)
         typeNames << QByteArray(typeid(t).name());
         list << Q_ARG(T, t);
+#endif
     }
 
     template<class T>
-    static void getList(QList<QByteArray> &typeNames, QList< QSharedPointer<QVariant> > &list, T&& t)
-    {
+    static void getList(QList<QByteArray> &typeNames,
+                        QList< QSharedPointer<QVariant> > &list, T &&t) {
+#if defined(Q_OS_LINUX)
+        char *type = abi::__cxa_demangle(typeid(t).name(), nullptr, nullptr, nullptr);
+        typeNames << QByteArray(type);
+        QSharedPointer<QVariant> ptr(new QVariant());
+        ptr->setValue(t);
+        list << ptr;
+        free(type);
+#elif defined(Q_OS_WIN)
         typeNames << QByteArray(typeid(t).name());
         QSharedPointer<QVariant> ptr(new QVariant());
         ptr->setValue(t);
         list << ptr;
+#endif
     }
-
 
     template<class ...Args>
     static void publishEvent(QByteArray eventName, Qt::ConnectionType type, Args&&... args)
@@ -64,6 +82,7 @@ public:
                     QList<QGenericArgument> list;
                     QList<QByteArray> typeNames;
                     int arr[] = { (getList(typeNames, list, args),0)... };
+                    Q_UNUSED(arr)
                     while(list.size() < 10) list << QGenericArgument();
                     auto index = -1;
 
@@ -75,6 +94,7 @@ public:
                     QList< QSharedPointer<QVariant> > list;
                     QList<QByteArray> typeNames;
                     int arr[] = { (getList(typeNames, list, args),0)... };
+                    Q_UNUSED(arr)
                     QuickEvent *event = new QuickEvent();
 
                     event->setInfo(list);
@@ -86,7 +106,7 @@ public:
     }
 
     static int methodIndex(QObject *recv, QList<QByteArray> &typeNames,
-                           int argsNum, QByteArray methodName);
+                           unsigned int argsNum, QByteArray methodName);
 
     static bool subscibeEvent(QObject *listener, QByteArray eventName);
 

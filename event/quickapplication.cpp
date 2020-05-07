@@ -50,7 +50,7 @@ bool checkpParameter(QList<QByteArray> s, QList<QByteArray> d)
 }
 
 int QuickApplication::methodIndex(QObject *recv, QList<QByteArray> &typeNames,
-                                  int argsNum, QByteArray methodName)
+                                  unsigned int argsNum, QByteArray methodName)
 {
     if(recv == nullptr)
         return -1;
@@ -63,7 +63,7 @@ int QuickApplication::methodIndex(QObject *recv, QList<QByteArray> &typeNames,
 
         if(methodName == method.name())
         {
-            if(method.parameterCount() > argsNum)
+            if(static_cast<unsigned int>(method.parameterCount()) > argsNum)
                 continue;
             if(checkpParameter(typeNames, method.parameterTypes()))
                 return i;
