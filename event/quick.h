@@ -12,13 +12,13 @@
 public:                                                                                         \
     bool event(QEvent *e) override                                                              \
     {                                                                                           \
-        if(e->type() == S_QuickEvent)                                                           \
+        if(e->type() == QuickEvent::S_QuickEvent)                                                           \
         {                                                                                       \
             auto quickEvent = dynamic_cast<QuickEvent*>(e);                                     \
             auto methodName = quickEvent->eventName();                                          \
             auto infos = quickEvent->info();                                                    \
             QList<QGenericArgument> list;                                                       \
-            methodName = QByteArray(MethodHead) + methodName;                                   \
+            methodName = QByteArray(METHODHEAD) + methodName;                                   \
             for(int i = 0; i < quickEvent->info().size() && i < 10; ++ i)                       \
                 list << QGenericArgument(infos[i]->typeName(), infos[i]->constData());          \
             while(list.size() <= 10)                                                            \

@@ -11,8 +11,9 @@
 #include <QDebug>
 #include <QArgument>
 
+#include "quickconfig.h"
 
-class QuickWork : public QObject
+class LIBRARYSHARED_EXPORT QuickWork : public QObject
 {
     Q_OBJECT
     QUICK_EVENT(QObject)

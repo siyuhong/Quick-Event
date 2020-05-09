@@ -1,6 +1,6 @@
 #include "dialog.h"
 #include "ui_dialog.h"
-#include "event/quickapplication.h"
+#include "quickapplication.h"
 
 #include "student.h"
 #include <QDebug>
