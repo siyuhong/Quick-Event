@@ -1,8 +1,8 @@
 #ifndef USERWORK_H
 #define USERWORK_H
 
-#include "event/quick.h"
-#include "event/quickwork.h"
+#include "quick.h"
+#include "quickwork.h"
 #include <QVariant>
 #include <QSharedPointer>
 

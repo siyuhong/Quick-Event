@@ -1,8 +1,6 @@
 #include "quickevent.h"
 
-const char *MethodHead = "event_";
-
-QEvent::Type S_QuickEvent = static_cast<QEvent::Type>(QEvent::registerEventType());
+QEvent::Type QuickEvent::S_QuickEvent = static_cast<QEvent::Type>(QEvent::registerEventType());
 
 
 QuickEvent::QuickEvent(Type type):QEvent(type)

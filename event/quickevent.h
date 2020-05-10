@@ -6,12 +6,11 @@
 #include <QVariant>
 #include <QMetaMethod>
 #include <QSharedPointer>
+#include "quickconfig.h"
 
-extern const char *MethodHead;
+#define  METHODHEAD "event_"
 
-extern QEvent::Type S_QuickEvent;
-
-class QuickEvent : public QEvent
+class LIBRARYSHARED_EXPORT QuickEvent : public QEvent
 {
 public:
     QuickEvent(Type type = S_QuickEvent);
@@ -28,6 +27,9 @@ public:
 
     QList<QSharedPointer<QVariant> > info() const;
     void setInfo(const QList<QSharedPointer<QVariant> > &info);
+
+public:
+    static QEvent::Type S_QuickEvent;
 
 private:
     QByteArray           eventName_;

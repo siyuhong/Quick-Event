@@ -151,6 +151,32 @@ void event_show_time(const QDateTime &time, QList<QString> list);
 
 2.对于同步触发和异步触发等待，则支持任意类型参数；
 
+#### 更新2.0.2版本
+
+1.QuickEvent使用cmake来组织工程了，添加编译动态库版本，参考CMakeLists.txt；
+
+``` javascript
+#true编译生成动态库; false编译生成静态库；
+set(quickevent_BUILD_SHARED_LIBS false)
+
+#ON编译示例 OFF不编译示例
+set(quickevent_BUILD_EXAMPLES ON)
+```
+
+2.解决继承动自导出类后反射崩溃问题，以下摘自QT源码:qmetatype.h；
+``` javascript
+ static int qt_metatype_id()
+    {
+        static QBasicAtomicInt metatype_id = Q_BASIC_ATOMIC_INITIALIZER(0);
+        if (const int id = metatype_id.loadAcquire())
+            return id;
+		//继承自dll导出类的对象T模板类型无法识别，需要Q_DECLARE_METATYPE前置声明
+        const char * const cName = T::staticMetaObject.className();
+		...
+    }
+```
+
+
 #### 参与贡献
 
 1.  Fork 本仓库

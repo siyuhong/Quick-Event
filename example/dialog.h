@@ -1,8 +1,8 @@
 #ifndef DIALOG_H
 #define DIALOG_H
 
-#include "event/quick.h"
-#include "event/quickevent.h"
+#include "quick.h"
+#include "quickevent.h"
 #include <QDialog>
 #include <QMessageBox>
 #include <QDebug>

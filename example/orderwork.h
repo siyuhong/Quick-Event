@@ -1,7 +1,7 @@
 #ifndef ORDERWORK_H
 #define ORDERWORK_H
 
-#include "event/quickwork.h"
+#include "quickwork.h"
 #include <QObject>
 
 class OrderWork : public QuickWork

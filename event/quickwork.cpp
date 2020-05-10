@@ -27,23 +27,6 @@ void QuickWork::moveToThread(QThread *thread)
     connect(thread, &QThread::started, this, &QuickWork::start);
 }
 
-bool QuickWork::eventWait(int msec)
-{
-    if(runFlag_ == false)
-        return false;
-
-    QTimer timer;
-    QEventLoop loop;
-
-    connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
-    connect(this, &QuickWork::quit, &loop, &QEventLoop::quit);
-
-    timer.start(msec);
-    loop.exec();
-
-    return runFlag_;
-}
-
 void QuickWork::setRunFlag(int value)
 {
     runFlag_ = value;
