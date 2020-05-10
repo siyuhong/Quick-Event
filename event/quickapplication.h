@@ -12,10 +12,11 @@
 #include <QThread>
 
 #include "quickevent.h"
+#include "quickconfig.h"
 
 class QuickWork;
 
-class QuickApplication : public QApplication
+class LIBRARYSHARED_EXPORT QuickApplication : public QApplication
 {
     Q_OBJECT
 public:
@@ -73,7 +74,7 @@ public:
         if(s_quick_event_pool.contains(eventName))
         {
             auto set = s_quick_event_pool[eventName];
-            auto methodName = QByteArray(MethodHead) + eventName;
+            auto methodName = QByteArray(METHODHEAD) + eventName;
 
             foreach (auto var, set) {
                 //using qt support

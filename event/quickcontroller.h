@@ -5,10 +5,11 @@
 #include <QMap>
 #include <QPair>
 #include <QThread>
+#include "quickconfig.h"
 
 class QuickWork;
 
-class QuickController : public QObject
+class LIBRARYSHARED_EXPORT QuickController : public QObject
 {
     Q_OBJECT
 public:

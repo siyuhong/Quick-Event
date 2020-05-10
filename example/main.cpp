@@ -1,6 +1,6 @@
-#include "event/quickapplication.h"
-#include "example/dialog.h"
-#include "event/quickcontroller.h"
+#include "quickapplication.h"
+#include "dialog.h"
+#include "quickcontroller.h"
 
 int main(int argc, char **argv)
 {

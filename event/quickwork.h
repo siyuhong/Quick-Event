@@ -11,8 +11,9 @@
 #include <QDebug>
 #include <QArgument>
 
+#include "quickconfig.h"
 
-class QuickWork : public QObject
+class LIBRARYSHARED_EXPORT QuickWork : public QObject
 {
     Q_OBJECT
     QUICK_EVENT(QObject)
@@ -28,8 +29,6 @@ public:
     virtual ~QuickWork();
     void moveToThread(QThread *thread);
 
-    bool eventWait(int msec);
-
     void setRunFlag(int value);
     MoveThreadType getMoveType() const;
 
@@ -37,7 +36,7 @@ signals:
     void quit();
 
 public slots:
-    virtual void start(){};
+    virtual void start(){}
 protected:
     int runFlag_;
     //对象移动方式

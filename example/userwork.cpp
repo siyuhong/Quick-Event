@@ -1,5 +1,5 @@
 #include "userwork.h"
-#include "event/quickapplication.h"
+#include "quickapplication.h"
 
 #include <QDebug>
 #include <QString>

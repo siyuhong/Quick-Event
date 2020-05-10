@@ -1,8 +1,8 @@
 #ifndef TESTWORK_H
 #define TESTWORK_H
 
-#include "event/quick.h"
-#include "event/quickwork.h"
+#include "quick.h"
+#include "quickwork.h"
 
 #include <QSharedPointer>
 #include <QVariant>
