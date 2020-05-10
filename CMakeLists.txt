@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #编译动态库或静态库
-set(quickevent_BUILD_SHARED_LIBS true)
+set(quickevent_BUILD_SHARED_LIBS false)
 
 #可执行文件输出目录
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG
