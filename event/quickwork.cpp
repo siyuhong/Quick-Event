@@ -9,6 +9,8 @@
 #include <QTimer>
 #include <QEventLoop>
 
+#include <QDebug>
+
 QuickWork::QuickWork(QObject *parent) : QObject(parent)
 {
     runFlag_ = true;
@@ -25,6 +27,7 @@ void QuickWork::moveToThread(QThread *thread)
 {
     QObject::moveToThread(thread);
     connect(thread, &QThread::started, this, &QuickWork::start);
+    connect(thread, &QThread::finished, this, &QuickWork::deleteLater);
 }
 
 void QuickWork::setRunFlag(int value)
