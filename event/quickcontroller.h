@@ -30,6 +30,8 @@ private:
     static QPair<QThread*, QSet<QuickWork*> > workthread_;
 
     static QSet<QuickWork*> works_;
+
+    static bool destory_flag_;
 };
 
 #endif // QUICKCONTROLLER_H

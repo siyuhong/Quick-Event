@@ -36,9 +36,6 @@ void typeName(const QByteArray &s, QByteArray &d)
 
 bool checkpParameter(QList<QByteArray> s, QList<QByteArray> d)
 {
-    qDebug() << d;
-    qDebug() << s;
-
     for(int i= 0; i < d.size(); ++ i)
     {
         QByteArray name;
@@ -69,9 +66,6 @@ int QuickApplication::methodIndex(QObject *recv, QList<QByteArray> &typeNames,
                 return i;
         }
     }
-
-    qDebug() << "QuickEvent : Not found " << QString(obj->className()) + "::" + methodName;
-
     return -1;
 }
 

@@ -2,6 +2,7 @@
 
 #include <QTimer>
 #include <QEventLoop>
+#include <QDebug>
 
 OrderWork::OrderWork(QuickWork *parent) : QuickWork(parent)
 {
