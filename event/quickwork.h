@@ -8,7 +8,6 @@
 #include <QSet>
 #include <QList>
 #include <QString>
-#include <QDebug>
 #include <QArgument>
 
 #include "quickconfig.h"
