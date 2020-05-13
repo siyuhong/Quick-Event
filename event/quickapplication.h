@@ -72,7 +72,8 @@ class LIBRARYSHARED_EXPORT QuickApplication : public QApplication {
             auto methodName = QByteArray(METHODHEAD) + eventName;
             foreach (auto var, set) {
                 //using qt support
-                if(var->thread() == QThread::currentThread() || type == Qt::BlockingQueuedConnection) {
+                if(var->thread() == QThread::currentThread() ||
+                        type == Qt::BlockingQueuedConnection) {
                     QList<QGenericArgument> list;
                     QList<QByteArray> typeNames;
                     int arr[] = { (getList(typeNames, list, args), 0)... };
@@ -84,8 +85,9 @@ class LIBRARYSHARED_EXPORT QuickApplication : public QApplication {
                     if((index = methodIndex(var, typeNames, argsNum, methodName)) == -1) {
                         continue;
                     }
-                    var->metaObject()->method(index).invoke(var, type, list[0], list[1], list[2], list[3],
-                                                            list[4], list[5], list[6], list[7], list[8], list[9]);
+                    var->metaObject()->method(index).invoke(
+                        var, type, list[0], list[1], list[2], list[3],
+                        list[4], list[5], list[6], list[7], list[8], list[9]);
                 } else { //quick event
                     QList< QSharedPointer<QVariant> > list;
                     QList<QByteArray> typeNames;
@@ -101,9 +103,13 @@ class LIBRARYSHARED_EXPORT QuickApplication : public QApplication {
     }
 
     static int methodIndex(QObject *recv, QList<QByteArray> &typeNames,
-                           unsigned int argsNum, QByteArray methodName);
+                           quint64 argsNum, QByteArray methodName);
 
     static bool subscibeEvent(QObject *listener, QByteArray eventName);
+
+    static bool UnsubscribeEvent(QObject *listener, QByteArray eventName);
+
+    static bool UnsubscribeEvent(QObject *listener);
 
     static void logoutEvent(QObject *listener, QByteArray eventName);
 

@@ -20,7 +20,7 @@
 #endif
 
 #define QUICK_EVENT(PARENTANME)                                                                 \
-public:                                                                                         \
+    public:                                                                                         \
     bool event(QEvent *e) override                                                              \
     {                                                                                           \
         if(e->type() == QuickEvent::S_QuickEvent)                                                           \
@@ -35,9 +35,16 @@ public:                                                                         
             while(list.size() <= 10)                                                            \
                 list << QGenericArgument();                                                     \
             QMetaObject::invokeMethod(this, methodName, list[0], list[1], list[2], list[3],     \
-                                    list[4], list[5], list[6], list[7], list[8], list[9]);      \
+                                      list[4], list[5], list[6], list[7], list[8], list[9]);    \
             return true;                                                                        \
         }                                                                                       \
         return PARENTANME::event(e);                                                            \
     }
+
+#define QUICK_DESTRUCT \
+    QuickApplication::UnsubscribeEvent(this);\
+
+
+
+
 #endif // QUICK_H
