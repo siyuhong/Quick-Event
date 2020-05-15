@@ -76,8 +76,7 @@ class LIBRARYSHARED_EXPORT QuickApplication : public QApplication {
                         type == Qt::BlockingQueuedConnection) {
                     QList<QGenericArgument> list;
                     QList<QByteArray> typeNames;
-                    int arr[] = { (getList(typeNames, list, args), 0)... };
-                    Q_UNUSED(arr)
+                    std::initializer_list<int32_t> {(getList(typeNames, list, args), 0)...};
                     while(list.size() < 10) {
                         list << QGenericArgument();
                     }
@@ -91,8 +90,7 @@ class LIBRARYSHARED_EXPORT QuickApplication : public QApplication {
                 } else { //quick event
                     QList< QSharedPointer<QVariant> > list;
                     QList<QByteArray> typeNames;
-                    int arr[] = { (getList(typeNames, list, args), 0)... };
-                    Q_UNUSED(arr)
+                    std::initializer_list<int32_t> {(getList(typeNames, list, args), 0)...};
                     QuickEvent *event = new QuickEvent();
                     event->setInfo(list);
                     event->setEventName(eventName);
