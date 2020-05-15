@@ -105,11 +105,9 @@ class LIBRARYSHARED_EXPORT QuickApplication : public QApplication {
 
     static bool subscibeEvent(QObject *listener, QByteArray eventName);
 
-    static bool UnsubscribeEvent(QObject *listener, QByteArray eventName);
+    static bool unSubscribeEvent(QObject *listener, QByteArray eventName);
 
-    static bool UnsubscribeEvent(QObject *listener);
-
-    static void logoutEvent(QObject *listener, QByteArray eventName);
+    static bool unSubscribeEvent(QObject *listener);
 
     static void exit(int rlt = 0);
 

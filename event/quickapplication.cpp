@@ -65,6 +65,14 @@ int QuickApplication::methodIndex(QObject *recv, QList<QByteArray> &typeNames,
 }
 
 bool QuickApplication::subscibeEvent(QObject *listener, QByteArray eventName) {
+
+    if(listener == nullptr)
+        return false;
+
+    QObject::connect(listener, &QObject::destroyed, [=](){
+        unSubscribeEvent(listener, eventName);
+    });
+
     QWriteLocker loker(&s_lock);
     if(s_quick_event_pool.contains(eventName)) {
         QSet<QObject *> tmpset = s_quick_event_pool[eventName];
@@ -78,7 +86,7 @@ bool QuickApplication::subscibeEvent(QObject *listener, QByteArray eventName) {
     return true;
 }
 
-bool QuickApplication::UnsubscribeEvent(QObject *listener, QByteArray eventName) {
+bool QuickApplication::unSubscribeEvent(QObject *listener, QByteArray eventName) {
     QWriteLocker loker(&s_lock);
     if(s_quick_event_pool.contains(eventName)) {
         QSet<QObject *> tmpset = s_quick_event_pool[eventName];
@@ -89,21 +97,12 @@ bool QuickApplication::UnsubscribeEvent(QObject *listener, QByteArray eventName)
     return false;
 }
 
-bool QuickApplication::UnsubscribeEvent(QObject *listener) {
+bool QuickApplication::unSubscribeEvent(QObject *listener) {
     QWriteLocker loker(&s_lock);
     foreach (auto var, s_quick_event_pool.keys()) {
         s_quick_event_pool[var].remove(listener);
     }
     return true;
-}
-
-void QuickApplication::logoutEvent(QObject *listener, QByteArray eventName) {
-    QWriteLocker loker(&s_lock);
-    if(s_quick_event_pool.contains(eventName)) {
-        QSet<QObject *> tmpset = s_quick_event_pool[eventName];
-        tmpset.remove(listener);
-        s_quick_event_pool.insert(eventName, tmpset);
-    }
 }
 
 void QuickApplication::exit(int rlt) {
