@@ -7,32 +7,30 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QDateTime>
+#include "student.h"
 
 namespace Ui {
-class Dialog;
+    class Dialog;
 }
 
-class Dialog : public QDialog
-{
+class Dialog : public QDialog {
     Q_OBJECT
     QUICK_EVENT(QDialog)
-public:
+  public:
     explicit Dialog(QWidget *parent = nullptr);
-    ~Dialog();
-public slots:
+    ~Dialog() override;
+  public slots:
     void event_show_time(const QDateTime &time);
-
     void on_pushButton_clicked();
-private slots:
+  private slots:
     void on_pushButton_2_clicked();
-
     void on_pushButton_3_clicked();
-
     void on_pushButton_4_clicked();
-
-private:
+    //
+    void event_dashao(const QString &name, QString work);
+    void event_denglu(const Student &stu);
+  private:
     Ui::Dialog *ui;
-
     QMessageBox *box;
 };
 

@@ -4,15 +4,14 @@
 #include "quickwork.h"
 #include <QObject>
 
-class OrderWork : public QuickWork
-{
+class OrderWork : public QuickWork {
     Q_OBJECT
-public:
-    Q_INVOKABLE explicit OrderWork(QuickWork *parent = 0);
+  public:
+    Q_INVOKABLE explicit OrderWork(QuickWork *parent = nullptr);
 
-signals:
+  signals:
 
-public slots:
+  public slots:
     void start();
 };
 QUICK_AUTO(OrderWork)

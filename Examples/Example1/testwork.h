@@ -10,20 +10,17 @@
 
 #include "student.h"
 
-class TestWork : public QuickWork
-{
+class TestWork : public QuickWork {
     Q_OBJECT
-public:
+  public:
     Q_INVOKABLE explicit TestWork(QuickWork *parent = nullptr);
 
     bool S_Request();
-public slots:
+  public slots:
     void event_dashao(const QString &name, QString work);
     void event_denglu(const Student &stu);
 
     void start();
 };
 QUICK_AUTO(TestWork)
-
-
 #endif // TESTWORK_H
