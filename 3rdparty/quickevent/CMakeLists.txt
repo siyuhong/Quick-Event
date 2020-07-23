@@ -1,5 +1,6 @@
 if( WIN32 )
-    add_definitions( -DUNICODE )
+    set(quickevent_BUILD_TYPE STATIC)
+    add_definitions("-DUSE_STATIC")
 endif()
 
 project(quickevent VERSION "3.0.0")
