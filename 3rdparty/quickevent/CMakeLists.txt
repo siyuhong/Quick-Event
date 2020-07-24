@@ -3,7 +3,7 @@ if( WIN32 )
     add_definitions("-DUSE_STATIC")
 endif()
 
-project(quickevent VERSION "3.0.0")
+project(quickevent VERSION "3.0.1")
 
 configure_file(
     "${quickevent_SOURCE_DIR}/QuickEventConfig.h.in"

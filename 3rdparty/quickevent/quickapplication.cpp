@@ -67,7 +67,23 @@ int QuickApplication::methodIndex(QObject *recv, QList<QByteArray> &typeNames,
 bool QuickApplication::subscibeEvent(
     QObject *listener, QByteArray eventName, const qint32 &level) {
     if(show_detailed_) {
-        qDebug() << "subscibeEvent" << listener << eventName << level;
+        if(level < 0) {
+            qDebug() << "\n-----------------"
+                     << "subscibeEvent:-----------------"
+                     << "\nlistener:" << listener
+                     << "\nEvent name:" << eventName
+                     << "\nsubscibe level" << "Disorder"
+                     << "\nEvent Thread" << QThread::currentThread()->objectName()
+                     << "\n----------------------------------\n";
+        } else {
+            qDebug() << "\n-----------------"
+                     << "subscibeEvent:-----------------"
+                     << "\nlistener:" << listener
+                     << "\nEvent name:" << eventName
+                     << "\nsubscibe level" << level
+                     << "\nEvent Thread" << QThread::currentThread()->objectName()
+                     << "\n----------------------------------\n";
+        }
     }
     if(level < 0) {
         // 无序链接

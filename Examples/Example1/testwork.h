@@ -22,5 +22,6 @@ class TestWork : public QuickWork {
 
     void start();
 };
-QUICK_AUTO(TestWork)
+QUICK_AUTO_L(TestWork, 25)
+
 #endif // TESTWORK_H

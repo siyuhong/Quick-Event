@@ -5,21 +5,25 @@
 #include "quickcontroller.h"
 #include "quickapplication.h"
 
-#if defined(USE_SHARED)
-#define QUICK_AUTO(ClassName)\
-    static int ClassId##ClassName = qRegisterMetaType<ClassName *>();\
-    static void *ThisPtr##ClassName = QuickController::NewInstance(#ClassName);
-#elif defined(USE_STATIC)
-#define QUICK_AUTO(ClassName)\
-    static int ClassId##ClassName = qRegisterMetaType<ClassName *>();\
-    static void *ThisPtr##ClassName = QuickController::NewInstance(#ClassName);
-#else
-
 #define QUICK_AUTO(ClassName)\
     Q_DECLARE_METATYPE(ClassName *) \
     static int ClassId##ClassName = qRegisterMetaType<ClassName *>();\
     static void *ThisPtr##ClassName = QuickController::NewInstance(#ClassName);
-#endif
+
+#define QUICK_AUTO_H(ClassName,value)\
+    Q_DECLARE_METATYPE(ClassName *) \
+    static int ClassId##ClassName = qRegisterMetaType<ClassName *>();\
+    static void *ThisPtr##ClassName = QuickController::NewInstance(\
+                                      #ClassName,QuickController::High,value);
+
+#define QUICK_AUTO_L(ClassName,value)\
+    Q_DECLARE_METATYPE(ClassName *) \
+    static int ClassId##ClassName = qRegisterMetaType<ClassName *>();\
+    static void *ThisPtr##ClassName = QuickController::NewInstance(\
+                                      #ClassName,QuickController::Low,value);
+
+
+
 
 #define QUICK_EVENT(PARENTANME)\
     public:\
@@ -106,13 +110,10 @@
     Q_UNUSED(controller)\
 
 #define QUICK_INSTALL_DETAILED()\
-    qDebug()<<"/**********-QuickEvent_ShowDETAILED-**********/\n" \
-            <<QString::fromStdString(QuickEvent_NAME) \
-            <<QString::fromStdString(QuickEvent_VER) \
-            <<"\n/*******************/";\
+    QuickApplication::show_detailed_=true;\
     QuickController controller;\
     Q_UNUSED(controller)\
-    QuickApplication::show_detailed_=true;\
+
 
 #define QUICK_SETSTYLE(name)\
     QFile file(name);\

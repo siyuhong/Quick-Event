@@ -14,5 +14,6 @@ class OrderWork : public QuickWork {
   public slots:
     void start();
 };
-QUICK_AUTO(OrderWork)
+QUICK_AUTO_H(OrderWork, 2)
+
 #endif // ORDERWORK_H

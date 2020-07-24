@@ -7,14 +7,13 @@
 #include <QSharedPointer>
 
 
-class UserWork : public QuickWork
-{
+class UserWork : public QuickWork {
     Q_OBJECT
-public:
+  public:
     Q_INVOKABLE explicit UserWork(QuickWork *parent = nullptr);
-public slots:
+  public slots:
     void event_linggongju(const QString &name);
 };
-QUICK_AUTO(UserWork)
+QUICK_AUTO_L(UserWork, 1)
 
 #endif // USERWORK_H

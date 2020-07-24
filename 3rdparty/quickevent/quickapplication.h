@@ -57,7 +57,13 @@ class LIBRARYSHARED_EXPORT QuickApplication : public QObject {
     template<class ...Args>
     static void publishEvent(QByteArray eventName, Qt::ConnectionType type, Args &&... args) {
         if(show_detailed_) {
-            qDebug() << "subscibeEvent" << eventName << type;
+            qDebug() << "\n-----------------"
+                     << "publishEvent:-----------------"
+                     << "\nEvent name: " << eventName
+                     << "\nEvent ConnectionType:" << type
+                     << "\nEvent Args:" << type
+                     << "\nEvent Thread:" << QThread::currentThread()
+                     << "\n----------------------------------\n";
         }
         if(eventName.isEmpty()) {
             return ;

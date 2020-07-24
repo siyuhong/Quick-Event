@@ -13,7 +13,7 @@
 TestWork::TestWork(QuickWork *parent) : QuickWork(parent) {
 //    QuickApplication::subscibeEvent(this, "denglu");
     this->Set_move_type_(WorkThread);
-    this->Set_run_flag_(false);
+    this->Set_run_flag_(1);
     QUICK_SUBSCIBE_L("denglu", 10)
     qDebug() << "--------1200-------";
     QuickApplication::subscibeEvent(this, "dashao");
@@ -34,6 +34,7 @@ void TestWork::event_denglu(const Student &stu) {
 
 void TestWork::start() {
     while(Get_run_flag_()) {
+        qDebug() << "123123123123";
         QTimer timer;
         QEventLoop loop;
         connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
