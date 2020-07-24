@@ -323,12 +323,41 @@ NewThread       //反射在新的线程中，会被每个反射出对象创建�
 1. 向QT元对象系统注册自己类型
 2. 在mian方法之前将自己类名注册到需要反射类列表中，QuickController对象创建后会反射出所有已注册的类，并做线程归属处理
 
+&emsp;&emsp;**QUICK_AUTO**定义：
+
+```cpp
+#define QUICK_AUTO(ClassName)\
+    Q_DECLARE_METATYPE(ClassName *) \
+    static int ClassId##ClassName = qRegisterMetaType<ClassName *>();\
+    static void *ThisPtr##ClassName = QuickController::NewInstance(#ClassName);
+
+#define QUICK_AUTO_H(ClassName,value)\
+    Q_DECLARE_METATYPE(ClassName *) \
+    static int ClassId##ClassName = qRegisterMetaType<ClassName *>();\
+    static void *ThisPtr##ClassName = QuickController::NewInstance(\
+                                      #ClassName,QuickController::High,value);
+
+#define QUICK_AUTO_L(ClassName,value)\
+    Q_DECLARE_METATYPE(ClassName *) \
+    static int ClassId##ClassName = qRegisterMetaType<ClassName *>();\
+    static void *ThisPtr##ClassName = QuickController::NewInstance(\
+                                      #ClassName,QuickController::Low,value);
+
+```
+
+&emsp;&emsp;**QuickController**反射**QuickWork**及其子类顺序类似订阅顺序，分为三个级别。高优先级、默认、低优先级。先反射高优先级类、默认优先级类、低优先级类。其中默认优先级里的类无序，高优先级、低优先级里类有序。
 
 > &emsp;&emsp;原理：C/C++无法在main之前执行复杂的操作，通过在.h文件中定义static变量且通过函数方式赋值，可以main之前执行一段代码，利用static在类外修饰变量表示该变量仅对于文件内部可见的原理，不会产生编译错误；[当然对C++11支持良好编译器可以使用constexpr]但是这个操作可能被执行多次，所以反射类列表使用了Set容器防止重复插入；
 
 
-* 注:继承自**QuickWork**后可以覆盖**QuickWork::start**函数，**start**函数一定会在被移动到的线程中调用；
-
+* 注:1. 继承自**QuickWork**后可以覆盖**QuickWork::start**函数，**start**函数一定会在被移动到的线程中调用；
+* 注:1. 高优先级、低优先级如果插入重复顺序会打印重复信息，让后只反射其中一个；
+```cpp
+----------------- QuickController OrderLow cover:----------------- 
+cover key: 25 
+cover name: "TestWork" "UserWork" 
+----------------------------------
+```
 
 ## 3.3 QuickEvent 初始化
 
@@ -352,7 +381,9 @@ int main(int argc, char **argv) {
 
 **QuickEvent**宏     | 说明
 -|-
-**QUICK_AUTO(ClassName)**  | 向QT元对象系统注册自己类型、实例化本身
+**QUICK_AUTO(ClassName)**  | 向QT元对象系统注册自己类型、实例化本身（默认优先级）
+**QUICK_AUTO_H(ClassName,value)**  | 向QT元对象系统注册自己类型、实例化本身（高优先级）
+**QUICK_AUTO_L(ClassName,value)**  | 向QT元对象系统注册自己类型、实例化本身（低优先级）
 **QUICK_EVENT(PARENTANME)**  | 使类本身支持发布订阅功能
 -|-
 **QUICK_DESTRUCT**  | 取消自身的所有订阅
