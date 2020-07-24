@@ -79,6 +79,11 @@ class LIBRARYSHARED_EXPORT QuickApplication : public QObject {
             list.append(s_quick_event_pool_low[eventName].values());
             auto methodName = QByteArray(METHODHEAD) + eventName;
             foreach (auto var, list) {
+                if(var) {
+                    qDebug() << var;
+                } else {
+                    qDebug() << "---------------";
+                }
                 if(var->thread() == QThread::currentThread() ||
                         type == Qt::BlockingQueuedConnection) {
                     // 同一个线程或者需要阻塞

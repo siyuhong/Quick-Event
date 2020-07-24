@@ -135,13 +135,13 @@ bool QuickApplication::UnsubscribeEvent(QObject *listener, QByteArray eventName)
         result = true;
     }
     if(s_quick_event_pool_high.contains(eventName)) {
-        QMap<qint32, QObject *> tmplist = s_quick_event_pool[eventName];
+        QMap<qint32, QObject *> tmplist = s_quick_event_pool_high[eventName];
         tmplist.remove(tmplist.key(listener));
         s_quick_event_pool.insert(eventName, tmplist);
         result = true;
     }
     if(s_quick_event_pool_low.contains(eventName)) {
-        QMap<qint32, QObject *> tmplist = s_quick_event_pool[eventName];
+        QMap<qint32, QObject *> tmplist = s_quick_event_pool_low[eventName];
         tmplist.remove(tmplist.key(listener));
         s_quick_event_pool.insert(eventName, tmplist);
         result = true;
@@ -155,10 +155,10 @@ bool QuickApplication::UnsubscribeEvent(QObject *listener) {
         s_quick_event_pool[var].remove(s_quick_event_pool[var].key(listener));
     }
     foreach (auto var, s_quick_event_pool_low.keys()) {
-        s_quick_event_pool[var].remove(s_quick_event_pool[var].key(listener));
+        s_quick_event_pool_low[var].remove(s_quick_event_pool_low[var].key(listener));
     }
     foreach (auto var, s_quick_event_pool_high.keys()) {
-        s_quick_event_pool[var].remove(s_quick_event_pool[var].key(listener));
+        s_quick_event_pool_high[var].remove(s_quick_event_pool_high[var].key(listener));
     }
     return true;
 }

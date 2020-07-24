@@ -48,15 +48,23 @@
     }
 
 #define QUICK_DESTRUCT \
-    QuickApplication::UnsubscribeEvent(this);\
+    QuickApplication::UnsubscribeEvent(this);
+#define QUICK_AUTO_DESTRUCT() \
+    connect(this,&QObject::destroyed,[=](){\
+        QuickApplication::UnsubscribeEvent(this);});
 
 #define QUICK_SUBSCIBE_OBJ(obj,name)\
+    connect(obj,&QObject::destroyed,[=](){\
+        QuickApplication::UnsubscribeEvent(obj);});\
     QuickApplication::subscibeEvent(obj, name);
 #define QUICK_SUBSCIBE(name)\
+    QUICK_AUTO_DESTRUCT()\
     QuickApplication::subscibeEvent(this, name);
 #define QUICK_SUBSCIBE_H(name,lev)\
+    QUICK_AUTO_DESTRUCT()\
     QuickApplication::subscibeEvent(this, name,lev);
 #define QUICK_SUBSCIBE_L(name,lev)\
+    QUICK_AUTO_DESTRUCT()\
     QuickApplication::subscibeEvent(this, name,100+lev);
 
 #define QUICK_PUBLISH1(name,arg1)\
