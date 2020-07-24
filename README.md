@@ -263,7 +263,8 @@ bool QuickApplication::UnsubscribeEvent(QObject *listener) {
   static QMap < QByteArray, QMap<qint32, QObject *> > s_quick_event_pool_low;
 ```
 #### 3.1.7.发布订阅类型
-&emsp;&emsp;**QuickEvent**发布订阅支持四种模式。
+&emsp;&emsp;**QuickEvent**发布订阅支持四种模式。  
+&emsp;&emsp;请注意，使用**QuickEvent**时往往不清楚对方详细代码，使用阻塞发布请务必小心，防止死锁！
 ```cpp
   ConnectionType::AutoConnection,
   // 自动模式发布,
@@ -351,7 +352,7 @@ NewThread       //反射在新的线程中，会被每个反射出对象创建�
 
 
 * 注:1. 继承自**QuickWork**后可以覆盖**QuickWork::start**函数，**start**函数一定会在被移动到的线程中调用；
-* 注:1. 高优先级、低优先级如果插入重复顺序会打印重复信息，让后只反射其中一个；
+* 注:2. 高优先级、低优先级如果插入重复顺序会打印重复信息，让后只反射其中一个；
 ```cpp
 ----------------- QuickController OrderLow cover:----------------- 
 cover key: 25 
@@ -483,19 +484,231 @@ set(quickevent_BUILD_EXAMPLES ON)
 7. QuickWork内部变量增加setter/getter
 8. 整理了下cmkae的example调用逻辑，方便后期增加案例
 ---
-### 3.X.0 版本计划
+### 更新3.0.1版本
+1. 增加若干案例
+2. 修复反射NewThread实例时，析构失败错误
+3. 优化详细打印
+4. 增加QuickController 增加排序注册
+
+---
+
+
+### 3.X.X 版本计划
 1. 增加多个案例，展示**QuickEvnet**所有接口使用方式
 2. 修复3.0.0更新后引入的bug
 
 
----
-# 5 **QuickEvnet**代码模型使用心得
+
+
+# 5 Examples介绍
+### Example1：完整功能展示
+
+### Example2：自动实例化 QuickApplication、QuickWork 排序反射展示
+```cpp
+----------------- QuickController Initialization:----------------- 
+Lib Name: "QuickEvent" 
+Lib VER: "3.0.1" 
+Controlle QuickWorks: ("High0", "High1", "High2", "Disorder2", "Disorder1", "Disorder0", "Low0", "Low1", "Low2") 
+----------------------------------
+
+"High0  Initialization complete"
+"High1  Initialization complete"
+"High2  Initialization complete"
+"Disorder2  Initialization complete"
+"Disorder1  Initialization complete"
+"Disorder0  Initialization complete"
+"Low0  Initialization complete"
+"Low1  Initialization complete"
+"Low2  Initialization complete"
+"High0  End of deconstruction"
+"High1  End of deconstruction"
+"High2  End of deconstruction"
+"Disorder2  End of deconstruction"
+"Disorder1  End of deconstruction"
+"Disorder0  End of deconstruction"
+"Low0  End of deconstruction"
+"Low1  End of deconstruction"
+"Low2  End of deconstruction"
+```
+* 注:1. Disorder反射乱序的,设计到有先后顺序需要注意
+
+
+
+### Example3：自动实例化 QuickApplication、QuickWork 线程归属展示
+```cpp
+----------------- QuickController Initialization:----------------- 
+Lib Name: "QuickEvent" 
+Lib VER: "3.0.1" 
+Controlle QuickWorks: ("Disorder3", "Disorder2", "Disorder0", "Disorder1") 
+----------------------------------
+
+Disorder3 Initialization QThread(0x1b9428d5fa0, name = "Main Thread")
+Disorder2 Initialization QThread(0x1b9428d5fa0, name = "Main Thread")
+Disorder0 Initialization QThread(0x1b9428d5fa0, name = "Main Thread")
+Disorder1 Initialization QThread(0x1b9428d5fa0, name = "Main Thread")
+Disorder0 Run QThread(0x1b9428d5fa0, name = "Main Thread")
+Disorder2 Run QThread(0x1b9428f94c0)
+Disorder3 Run msleep Begin QThread(0x1b9428f9400, name = "Work Thread")
+Disorder3 Run msleep End QThread(0x1b9428f9400, name = "Work Thread")
+Disorder1 Run msleep Begin QThread(0x1b9428f9400, name = "Work Thread")
+Disorder1 Run msleep End QThread(0x1b9428f9400, name = "Work Thread")
+-------------quit-------------
+"Disorder2  End of deconstruction"
+"Disorder3  End of deconstruction"
+"Disorder1  End of deconstruction"
+"Disorder0  End of deconstruction"
+```
+* 注:1. WorkThread下线程类似MainThread，阻塞依次执行
+
+
+
+### Example4：发布订阅  跨线程发布订阅
+WorkThread的start耗时操作会阻塞所有WorkThread中订阅事件
+```cpp
+----------------- QuickController Initialization:----------------- 
+Lib Name: "QuickEvent" 
+Lib VER: "3.0.1" 
+Controlle QuickWorks: ("MainThreadSubscibe", "MainThreadPublish", "NewThreadPublish", "WorkThreadPublish", "NewThreadSubscibe", "WorkThreadSubscibe") 
+----------------------------------
+
+-------------Main Thread Publish-------------
+
+----------------- publishEvent:----------------- 
+Event name:  "Example4" 
+Event ConnectionType: Qt::AutoConnection 
+Event Args: Qt::AutoConnection 
+Event Thread: QThread(0x20815dc6640, name = "Main Thread") 
+----------------------------------
+
+MainThreadSubscibe QThread(0x20815dc6640, name = "Main Thread")
+NewThreadSubscibe QThread(0x20815df18b0)
+
+-------------Work Thread Publish-------------
+
+----------------- publishEvent:----------------- 
+Event name:  "Example4" 
+Event ConnectionType: Qt::AutoConnection 
+Event Args: Qt::AutoConnection 
+Event Thread: QThread(0x20815de8820, name = "Work Thread") 
+----------------------------------
+
+WorkThreadSubscibe QThread(0x20815de8820, name = "Work Thread")
+MainThreadSubscibe QThread(0x20815dc6640, name = "Main Thread")
+NewThreadSubscibe QThread(0x20815df18b0)
+WorkThreadSubscibe QThread(0x20815de8820, name = "Work Thread")
+
+-------------New Thread Publish-------------
+
+----------------- publishEvent:----------------- 
+Event name:  "Example4" 
+Event ConnectionType: Qt::AutoConnection 
+Event Args: Qt::AutoConnection 
+Event Thread: QThread(0x20815de86c0) 
+----------------------------------
+
+MainThreadSubscibe QThread(0x20815dc6640, name = "Main Thread")
+NewThreadSubscibe QThread(0x20815df18b0)
+WorkThreadSubscibe QThread(0x20815de8820, name = "Work Thread")
+-------------Quit-------------
+```
+* 注:1. WorkThread的start耗时操作会阻塞所有WorkThread中订阅事件
+
+### Example4：发布订阅  多种发布展示（同步、异步、异步等待、自动）
+```cpp
+----------------- QuickController Initialization:----------------- 
+Lib Name: "QuickEvent" 
+Lib VER: "3.0.1" 
+Controlle QuickWorks: ("NewThreadSubscibe1", "NewThreadSubscibe2") 
+----------------------------------
+
+
+----------------- subscibeEvent:----------------- 
+listener: NewThreadSubscibe1(0x23c34998610) 
+Event name: "Example5" 
+subscibe level Disorder 
+Event Thread "Main Thread" 
+----------------------------------
+
+
+----------------- subscibeEvent:----------------- 
+listener: NewThreadSubscibe2(0x23c34998950) 
+Event name: "Example5" 
+subscibe level Disorder 
+Event Thread "Main Thread" 
+----------------------------------
+
+
+-------------Direct PUBLISH-------------
+
+----------------- publishEvent:----------------- 
+Event name:  "Example5" 
+Event ConnectionType: Qt::DirectConnection 
+Event Args: Qt::DirectConnection 
+Event Thread: QThread(0x23c34976690, name = "Main Thread") 
+----------------------------------
+
+New1 Subscibe bugin QThread(0x23c34998570)
+New2 Subscibe bugin QThread(0x23c349988d0)
+New2 Subscibe end QThread(0x23c349988d0)
+New1 Subscibe end QThread(0x23c34998570)
+
+-------------Queued PUBLISH-------------
+
+----------------- publishEvent:----------------- 
+Event name:  "Example5" 
+Event ConnectionType: Qt::QueuedConnection 
+Event Args: Qt::QueuedConnection 
+Event Thread: QThread(0x23c34976690, name = "Main Thread") 
+----------------------------------
+
+New1 Subscibe bugin QThread(0x23c34998570)
+New2 Subscibe bugin QThread(0x23c349988d0)
+New2 Subscibe end QThread(0x23c349988d0)
+New1 Subscibe end QThread(0x23c34998570)
+
+-------------Blocking Queued PUBLISH-------------
+
+----------------- publishEvent:----------------- 
+Event name:  "Example5" 
+Event ConnectionType: Qt::BlockingQueuedConnection 
+Event Args: Qt::BlockingQueuedConnection 
+Event Thread: QThread(0x23c34976690, name = "Main Thread") 
+----------------------------------
+
+New1 Subscibe bugin QThread(0x23c34998570)
+New1 Subscibe end QThread(0x23c34998570)
+New2 Subscibe bugin QThread(0x23c349988d0)
+New2 Subscibe end QThread(0x23c349988d0)
+
+-------------Auto PUBLISH1-------------
+
+----------------- publishEvent:----------------- 
+Event name:  "Example5" 
+Event ConnectionType: Qt::AutoConnection 
+Event Args: Qt::AutoConnection 
+Event Thread: QThread(0x23c34976690, name = "Main Thread") 
+----------------------------------
+
+New1 Subscibe bugin QThread(0x23c34998570)
+New2 Subscibe bugin QThread(0x23c349988d0)
+New2 Subscibe end QThread(0x23c349988d0)
+New1 Subscibe end QThread(0x23c34998570)
+-------------Quit-------------
+"NewThreadSubscibe1  End of deconstruction"
+"NewThreadSubscibe2  End of deconstruction"
+```
+* 注:1. 小心死锁，尤其跨线程阻塞同步、带QDialog等有返回值的窗口请勿使用阻塞发布
+
+
+### 。。。。持续增加中
+
+# 6 QuickEvnet代码模型使用心得
 &emsp;
 &emsp;
 &emsp;
 &emsp;
 
-# 6 关于作者
+# 7 关于作者
 
 &emsp;**Bruce**  
  Gitee

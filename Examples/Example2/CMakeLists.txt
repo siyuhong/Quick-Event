@@ -1,5 +1,4 @@
-﻿project(Example1)
-
+﻿project(Example2)
 if( WIN32 )
     add_definitions( -DUNICODE )
 endif()
@@ -23,9 +22,11 @@ add_executable(${PROJECT_NAME}
     ${FORMS}
     )
 
+
 set_target_properties(${PROJECT_NAME}
     PROPERTIES AUTOMOC TRUE
     )
+
 target_link_libraries(${PROJECT_NAME}
     Qt5::Core Qt5::Gui Qt5::Widgets
     ${3rdparty_Libaries}

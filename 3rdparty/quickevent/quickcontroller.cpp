@@ -1,4 +1,4 @@
-#include "quickcontroller.h"
+﻿#include "quickcontroller.h"
 #include "quickwork.h"
 
 QMap<QThread *, QuickWork *> QuickController::threads_;// 新线程
@@ -9,7 +9,7 @@ bool QuickController::destory_flag_ = false;
 QuickController::QuickController(QObject *parent) : QObject(parent) {
     QThread::currentThread()->setObjectName("Main Thread");
     auto list = static_cast< QList<QByteArray> *>(NewInstance(""));
-    if(QuickApplication::show_detailed_) {
+    if(QuickApplication::show_detailed_ && !list->isEmpty()) {
         qDebug() << "\n-----------------"
                  << "QuickController Initialization:-----------------"
                  << "\nLib Name:" << QString::fromStdString(QuickEvent_NAME)
@@ -125,7 +125,7 @@ void QuickController::destory() {
     for(; it != threads_.end(); ++ it) {
         it.value()->setRunFlag(false);
         it.key()->exit();
-        workthread_.first->wait(10);
+        it.key()->wait(5);
     }
     foreach(auto var, workthread_.second) {
         var->setRunFlag(false);
@@ -134,6 +134,7 @@ void QuickController::destory() {
         workthread_.first->exit();
         workthread_.first->wait(5);
     }
+    // 主线程析构
     foreach(auto var, works_) {
         var->setRunFlag(false);
         delete var;

@@ -1,4 +1,4 @@
-#ifndef QUICK_H
+﻿#ifndef QUICK_H
 #define QUICK_H
 
 #include "quickconfig.h"

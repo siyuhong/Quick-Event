@@ -2,7 +2,11 @@
 project(QuickEvent)
 
 # Compile the project
-set(Example1  ON)
+set(Example1  ON)# 完整功能
+set(Example2  ON)# 自动实例化 排序反射展示
+set(Example3  ON)# 自动实例化 线程归属展示
+set(Example4  ON)# 发布订阅 跨线程发布订阅展示
+set(Example5  ON)# 发布订阅 多种发布展示（同步、异步、异步等待、自动）
 
 # Set self path
 set(yaoxin ON)
@@ -104,6 +108,20 @@ set(Resource_Path ${Resource} CACHE PATH "mailiu Resource")
 if(Example1)
     add_subdirectory(Examples/Example1)
 endif()
+if(Example2)
+    add_subdirectory(Examples/Example2)
+endif()
+if(Example3)
+    add_subdirectory(Examples/Example3)
+endif()
+if(Example4)
+    add_subdirectory(Examples/Example4)
+endif()
+if(Example5)
+    add_subdirectory(Examples/Example5)
+endif()
+
+
 
 
 # Clear
